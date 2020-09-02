@@ -26,7 +26,7 @@ use Symfony\Component\VarDumper\Server\Connection;
 /**
  * @author Nicolas Grekas <p@tchwork.com>
  *
- * @final
+ * @final since Symfony 4.3
  */
 class DumpDataCollector extends DataCollector implements DataDumperInterface
 {
@@ -98,7 +98,12 @@ class DumpDataCollector extends DataCollector implements DataDumperInterface
         }
     }
 
-    public function collect(Request $request, Response $response, \Throwable $exception = null)
+    /**
+     * {@inheritdoc}
+     *
+     * @param \Throwable|null $exception
+     */
+    public function collect(Request $request, Response $response/*, \Throwable $exception = null*/)
     {
         if (!$this->dataCount) {
             $this->data = [];
@@ -180,12 +185,12 @@ class DumpDataCollector extends DataCollector implements DataDumperInterface
         self::__construct($this->stopwatch, $fileLinkFormat, $charset);
     }
 
-    public function getDumpsCount(): int
+    public function getDumpsCount()
     {
         return $this->dataCount;
     }
 
-    public function getDumps($format, $maxDepthLimit = -1, $maxItemsPerDepth = -1): array
+    public function getDumps($format, $maxDepthLimit = -1, $maxItemsPerDepth = -1)
     {
         $data = fopen('php://memory', 'r+b');
 
@@ -212,7 +217,7 @@ class DumpDataCollector extends DataCollector implements DataDumperInterface
         return $dumps;
     }
 
-    public function getName(): string
+    public function getName()
     {
         return 'dump';
     }
@@ -230,13 +235,7 @@ class DumpDataCollector extends DataCollector implements DataDumperInterface
                 --$i;
             }
 
-            if (isset($_SERVER['VAR_DUMPER_FORMAT'])) {
-                $html = 'html' === $_SERVER['VAR_DUMPER_FORMAT'];
-            } else {
-                $html = !\in_array(\PHP_SAPI, ['cli', 'phpdbg'], true) && stripos($h[$i], 'html');
-            }
-
-            if ($html) {
+            if (!\in_array(\PHP_SAPI, ['cli', 'phpdbg'], true) && stripos($h[$i], 'html')) {
                 $dumper = new HtmlDumper('php://output', $this->charset);
                 $dumper->setDisplayOptions(['fileLinkFormat' => $this->fileLinkFormat]);
             } else {
