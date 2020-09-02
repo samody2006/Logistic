@@ -12,7 +12,7 @@ class CreateUsersTable extends Migration
      * @return void
      */
     public function up()
-    {
+    {if(!Schema::hasTable('users')){
         Schema::create('users', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name');
@@ -23,6 +23,8 @@ class CreateUsersTable extends Migration
             $table->timestamps();
         });
     }
+}
+
 
     /**
      * Reverse the migrations.
